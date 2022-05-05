@@ -1,0 +1,170 @@
+CREATE TABLE EmpLog (
+	LogID int IDENTITY(1,1) NOT NULL,
+	EmpID int NOT NULL,
+	Operation nvarchar(10) NOT NULL,
+	UpdatedDate Datetime NOT NULL	
+)
+
+#FOR trigger
+
+CREATE TRIGGER dbo.trgEmployeeInsert
+ON dbo.Employee
+FOR INSERT	
+AS
+    INSERT INTO dbo.EmpLog(EmpID, Operation, UpdatedDate)
+    SELECT EmployeeID ,'INSERT',GETDATE() FROM INSERTED; --virtual table INSERTED
+
+
+#after trigger
+
+CREATE TRIGGER dbo.trgEmployeeUpdate
+ON dbo.Employee
+AFTER UPDATE
+AS
+    INSERT INTO dbo.EmpLog(EmpID, Operation, UpdatedDate)
+    SELECT EmployeeID,'UPDATE', GETDATE() FROM DELETED;
+
+
+#instead of trigger
+
+CREATE TRIGGER dbo.trgInsteadOfDelete 
+ON dbo.Employee
+INSTEAD OF DELETE
+AS
+    INSERT INTO dbo.EmpLog(EmpID, Operation, UpdatedDate)
+    SELECT EmployeeID,'DELETE', GETDATE() FROM DELETED;
+
+
+
+#Scalar function
+
+create function fun_JoinEmpColumnInfo  
+(  
+   @EmpContact nchar(15),  
+   @EmpEmail nvarchar(50),  
+   @EmpCity varchar(30)  
+)  
+returns nvarchar(100)  
+as  
+begin return(select @EmpContact+ ' ' +@EmpEmail + ' ' + @EmpCity)  
+end 
+
+#How to call function
+select dbo.fun_JoinEmpColumnInfo(EmpContact,EmpEmail,EmpCity) as Detail from Employee
+
+
+#Table Valued Function
+
+Create function Fun_EmployeeInformation()      
+returns table       
+as      
+return(select * from Employee  )   
+
+#How to call function
+select * from Fun_EmployeeInformation()  
+
+
+#mathematical function to create a two-number addition.
+
+CREATE FUNCTION Fun_Addition(@Num1 Decimal(7,2),  
+                         @Num2 Decimal(7,2))  
+RETURNS Decimal(7,2)  
+Begin  
+    DECLARE @Result Decimal(7,2)  
+    SET @Result = @Num1 + @Num2  
+    RETURN @Result  
+end  
+
+#How to call function
+print dbo.Fun_Addition(12,13)  
+
+
+
+
+
+#select 
+
+SELECT * FROM Customers
+WHERE Country='Mexico' AND City='Something';
+
+#distinct
+
+SELECT DISTINCT Country FROM Customers;
+
+#not
+
+SELECT column1, column2, ...
+FROM table_name
+WHERE NOT condition;
+
+#order by
+
+SELECT * FROM Customers
+ORDER BY Country ASC, CustomerName DESC;
+
+#insert 
+
+INSERT INTO Customers (CustomerName, ContactName, Address, City, PostalCode, Country)
+VALUES ('Cardinal', 'Tom B. Erichsen', 'Skagen 21', 'Stavanger', '4006', 'Norway');
+
+#null
+SELECT CustomerName, ContactName, Address
+FROM Customers
+WHERE Address IS NULL;
+
+#update
+UPDATE Customers
+SET ContactName = 'Alfred Schmidt', City= 'Frankfurt'
+WHERE CustomerID = 1;
+
+#delete
+DELETE FROM Customers WHERE CustomerName='Alfreds Futterkiste';
+
+#COUNT(),SUM(),AVG(),MIN(),MAX()
+SELECT COUNT(ProductID)
+FROM Products;
+
+
+
+LIKE Operator	Description
+WHERE CustomerName LIKE 'a%'	Finds any values that start with "a"
+WHERE CustomerName LIKE '%a'	Finds any values that end with "a"
+WHERE CustomerName LIKE '%or%'	Finds any values that have "or" in any position
+WHERE CustomerName LIKE '_r%'	Finds any values that have "r" in the second position
+WHERE CustomerName LIKE 'a_%'	Finds any values that start with "a" and are at least 2 characters in length
+WHERE CustomerName LIKE 'a__%'	Finds any values that start with "a" and are at least 3 characters in length
+WHERE ContactName LIKE 'a%o'	Finds any values that start with "a" and ends with "o"
+
+SELECT * FROM Customers
+WHERE CustomerName LIKE 'a%';
+
+#in statement
+SELECT column_name(s)
+FROM table_name
+WHERE column_name IN (SELECT STATEMENT);
+
+
+#between
+SELECT * FROM Products
+WHERE Price NOT BETWEEN 10 AND 20;
+
+#alias
+SELECT CustomerID AS ID, CustomerName AS Customer
+FROM Customers;
+
+#group by
+SELECT COUNT(CustomerID), Country
+FROM Customers
+GROUP BY Country;
+
+#create database
+CREATE DATABASE databasename;
+
+#use database
+Use databasename;
+
+#views
+CREATE VIEW [Brazil Customers] AS
+SELECT CustomerName, ContactName
+FROM Customers
+WHERE Country = 'Brazil';
