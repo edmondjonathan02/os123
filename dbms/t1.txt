@@ -1,0 +1,29 @@
+View.........
+CREATE VIEW [PLAYER DETAILS] 
+AS
+SELECT PID, PNAME, TID
+FROM PLAYER;
+
+SELECT * FROM [PLAYER DETAILS]
+
+Procedure............
+Create procedure EXE
+as 
+begin
+Declare @A int, @B int, @SUM int;
+set @A = 10;
+set @B = 20;
+set @SUM = @A+@B;
+print'Sum of a and b is';
+print @SUM;
+end;
+exec EXE;
+
+trigger..........
+create trigger tr1
+on PLAYS
+after insert
+as
+begin 
+  print'value was inserted'
+end
